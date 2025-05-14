@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öğrenci Bilgi Sistemi</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/ogrenciler.css">
+    <style>
+        :root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --light-color: #ecf0f1;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    background-color: var(--secondary-color);
+    color: white;
+    height: 100vh;
+    position: fixed;
+    padding-top: 20px;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 5px;
+    border-radius: 5px;
+    padding: 10px 15px;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(19, 223, 0, 0.884);
+    color: white;
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.sidebar .nav-link i {
+    margin-right: 10px;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 20px;
+}
+
+.stat-card i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.stat-card .count {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-card .label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.table th {
+    background-color: var(--light-color);
+}
+
+.badge-success {
+    background-color: var(--success-color);
+}
+
+.badge-danger {
+    background-color: var(--danger-color);
+}
+
+.search-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 12px;
+    color: #6c757d;
+}
+
+.search-box input {
+    padding-left: 40px;
+    border-radius: 20px;
+}
+
+.student-profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-item {
+    margin-bottom: 15px;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+}
+    </style>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="text-center mb-4">
+                    <h4>Öğrenci Bilgi Sistemi</h4>
+                </div>
+                <ul class="nav flex-column">
+                     <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">
+                        <i class="fas fa-tachometer-alt me-2"></i>anasayfa
+                    </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="ogrenciler.html">
+                            <i class="fas fa-users"></i>Öğrenciler
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dersler.html">
+                            <i class="fas fa-book"></i>Dersler
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="notlar.html">
+                            <i class="fas fa-graduation-cap"></i>Notlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="raporlar.html">
+                            <i class="fas fa-chart-bar"></i>Raporlar
+                        </a>
+                        <li class="nav-item mt-3">
+                            <a class="nav-link text-danger" href="cikis_ekrani.html">
+                                <i class="fas fa-sign-out-alt"></i>Çıkış Yap
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Öğrenci Yönetimi</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-file-export"></i> Dışa Aktar
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-print"></i> Yazdır
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#yeniOgrenciModal">
+                            <i class="fas fa-plus"></i> Yeni Öğrenci
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Öğrenci Filtreleme</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" class="form-control" placeholder="Öğrenci adı veya numarası ara...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select">
+                                    <option selected>Sınıf Seçin</option>
+                                    <option>9-A</option>
+                                    <option>9-B</option>
+                                    <option>10-A</option>
+                                    <option>10-B</option>
+                                    <option>11-A</option>
+                                    <option>11-B</option>
+                                    <option>12-A</option>
+                                    <option>12-B</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select">
+                                    <option selected>Durum Seçin</option>
+                                    <option>Tüm Öğrenciler</option>
+                                    <option>Başarılı</option>
+                                    <option>Orta</option>
+                                    <option>Başarısız</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100">
+                                    <i class="fas fa-filter"></i> Filtrele
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Öğrenci</th>
+                                        <th>Numara</th>
+                                        <th>Sınıf</th>
+                                        <th>Doğum Tarihi</th>
+                                        <th>İletişim</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="/static/resimler/sefik.jpg" class="rounded-circle me-2" width="40" height="40">
+                                                <div>
+                                                    <div class="fw-bold">Şefik Mersinli</div>
+                                                    <small class="text-muted">sefik.mersinli@okul.edu</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>2023001</td>
+                                        <td>10-E</td>
+                                        <td>01.03.2006</td>
+                                        <td>
+                                            <i class="fas fa-phone me-1 text-success"></i> 5524274032<br>
+                                            <i class="fas fa-envelope me-1 text-primary"></i> sefik.mersinli@gmail.com
+                                        </td>
+                                        <td><span class="badge bg-success">Başarılı</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Detaylar">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="/static/resimler/kadinfotograf.jpg" class="rounded-circle me-2" width="40" height="40">
+                                                <div>
+                                                    <div class="fw-bold">Ayşe Demir</div>
+                                                    <small class="text-muted">ayse.demir@okul.edu</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>2023002</td>
+                                        <td>11-B</td>
+                                        <td>22.06.2006</td>
+                                        <td>
+                                            <i class="fas fa-phone me-1 text-success"></i> 555 234 56 78<br>
+                                            <i class="fas fa-envelope me-1 text-primary"></i> ayse.demir@okul.edu
+                                        </td>
+                                        <td><span class="badge bg-success">Başarılı</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Detaylar">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="/static/resimler/erkekfotograf1.jpg" class="rounded-circle me-2" width="40" height="40">
+                                                <div>
+                                                    <div class="fw-bold">Mehmet Kaya</div>
+                                                    <small class="text-muted">mehmet.kaya@okul.edu</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>2023003</td>
+                                        <td>9-C</td>
+                                        <td>10.11.2008</td>
+                                        <td>
+                                            <i class="fas fa-phone me-1 text-success"></i> 555 345 67 89<br>
+                                            <i class="fas fa-envelope me-1 text-primary"></i> mehmet.kaya@okul.edu
+                                        </td>
+                                        <td><span class="badge bg-warning">Orta</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Detaylar">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="/static/resimler/kadinfotograf2.jpg" class="rounded-circle me-2" width="40" height="40">
+                                                <div>
+                                                    <div class="fw-bold">Zeynep Şahin</div>
+                                                    <small class="text-muted">zeynep.sahin@okul.edu</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>2023004</td>
+                                        <td>12-A</td>
+                                        <td>05.01.2005</td>
+                                        <td>
+                                            <i class="fas fa-phone me-1 text-success"></i> 555 456 78 90<br>
+                                            <i class="fas fa-envelope me-1 text-primary"></i> zeynep.sahin@okul.edu
+                                        </td>
+                                        <td><span class="badge bg-primary">Üstün</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Detaylar">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="/static/resimler/erkekfotograf2.jpg" class="rounded-circle me-2" width="40" height="40">
+                                                <div>
+                                                    <div class="fw-bold">Can Aydın</div>
+                                                    <small class="text-muted">can.aydin@okul.edu</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>2023005</td>
+                                        <td>10-B</td>
+                                        <td>30.09.2007</td>
+                                        <td>
+                                            <i class="fas fa-phone me-1 text-success"></i> 555 567 89 01<br>
+                                            <i class="fas fa-envelope me-1 text-primary"></i> can.aydin@okul.edu
+                                        </td>
+                                        <td><span class="badge bg-danger">Başarısız</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Detaylar">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Önceki</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Sonraki</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="yeniOgrenciModal" tabindex="-1" aria-labelledby="yeniOgrenciModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="yeniOgrenciModalLabel">Yeni Öğrenci Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="ogrenciAd" class="form-label">Ad</label>
+                                <input type="text" class="form-control" id="ogrenciAd" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ogrenciSoyad" class="form-label">Soyad</label>
+                                <input type="text" class="form-control" id="ogrenciSoyad" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="ogrenciNo" class="form-label">Öğrenci No</label>
+                                <input type="text" class="form-control" id="ogrenciNo" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ogrenciSinif" class="form-label">Sınıf</label>
+                                <select class="form-select" id="ogrenciSinif" required>
+                                    <option value="" selected disabled>Seçiniz</option>
+                                    <option>9-A</option>
+                                    <option>9-B</option>
+                                    <option>10-A</option>
+                                    <option>10-B</option>
+                                    <option>11-A</option>
+                                    <option>11-B</option>
+                                    <option>12-A</option>
+                                    <option>12-B</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dogumTarihi" class="form-label">Doğum Tarihi</label>
+                                <input type="date" class="form-control" id="dogumTarihi" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ogrenciFoto" class="form-label">Öğrenci Fotoğrafı</label>
+                                <input class="form-control" type="file" id="ogrenciFoto">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="telefon" class="form-label">Telefon</label>
+                                <input type="tel" class="form-control" id="telefon" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">E-posta</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adres" class="form-label">Adres</label>
+                            <textarea class="form-control" id="adres" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Veliler</label>
+                            <div class="border p-3 rounded">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="veliAd" class="form-label">Veli Adı</label>
+                                        <input type="text" class="form-control" id="veliAd">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="veliSoyad" class="form-label">Veli Soyadı</label>
+                                        <input type="text" class="form-control" id="veliSoyad">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="veliTelefon" class="form-label">Veli Telefon</label>
+                                        <input type="tel" class="form-control" id="veliTelefon">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="veliYakinlik" class="form-label">Yakınlık Derecesi</label>
+                                        <select class="form-select" id="veliYakinlik">
+                                            <option>Anne</option>
+                                            <option>Baba</option>
+                                            <option>Kardeş</option>
+                                            <option>Diğer</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-plus"></i> Veli Ekle
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
